@@ -1,6 +1,6 @@
 package com.glr.controller;
 
-import com.glr.entity.Undergraduate;
+import com.glr.model.Undergraduate;
 import com.glr.repository.UndergraduateRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

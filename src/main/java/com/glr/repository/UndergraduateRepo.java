@@ -1,6 +1,6 @@
 package com.glr.repository;
 
-import com.glr.entity.Undergraduate;
+import com.glr.model.Undergraduate;
 import org.springframework.data.repository.CrudRepository;
 
 
