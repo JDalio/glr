@@ -1,6 +1,4 @@
 package com.glr.utils;
-
-
 /**
  * @Description: 自定义响应数据结构
  * 这个类是提供给门户，ios，安卓，微信商城用的
@@ -12,8 +10,6 @@ package com.glr.utils;
  * 502：拦截器拦截到用户token出错
  * 555：异常抛出信息
  */
-
-import org.omg.CORBA.Object;
 
 public class GlrJSONResult
 {
@@ -75,4 +71,34 @@ public class GlrJSONResult
         return this.status == 200;
     }
 
+
+    public int getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(int status)
+    {
+        this.status = status;
+    }
+
+    public String getMsg()
+    {
+        return msg;
+    }
+
+    public void setMsg(String msg)
+    {
+        this.msg = msg;
+    }
+
+    public Object getData()
+    {
+        return data;
+    }
+
+    public void setData(Object data)
+    {
+        this.data = data;
+    }
 }

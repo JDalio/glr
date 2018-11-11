@@ -1,13 +1,10 @@
 package com.glr.controller;
 
 import com.glr.model.WxSessionModel;
-import com.glr.utils.GlrJSONResult;
-import com.glr.utils.HttpClientUtil;
-import com.glr.utils.JsonUtil;
-import com.glr.utils.RedisOperator;
+import com.glr.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -19,16 +16,16 @@ public class WxLoginController
     @Autowired
     private RedisOperator redis;
 
-    @RequestMapping(value = "/wxLogin", method = {RequestMethod.POST})
-    public GlrJSONResult wxLogin(String code)
+    @PostMapping("/wxLogin")
+    public GlrJSONResult wxLogin(@RequestBody Map<String, String> login)
     {
-        System.out.println("wxLogin - code: " + code);
+        System.out.println("wxLogin - code: " + login.get("code"));
 
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         Map<String, String> param = new HashMap<>();
         param.put("appid", "wxe92a7efd88f51aab");
-        param.put("secret", "157f18ebdc5d1d6e3794bd42161ec446");
-        param.put("js_code", code);
+        param.put("secret", "bd8d935cee881c3513ca0af5a329bbb6");
+        param.put("js_code", login.get("code"));
         param.put("grant_type", "authorization_code");
 
         String wxres = HttpClientUtil.doGet(url, param);
@@ -37,8 +34,34 @@ public class WxLoginController
         WxSessionModel model = JsonUtil.jsonToPojo(wxres, WxSessionModel.class);
 
         //save in reids
-        redis.set("user-redis-session:" + model.getOpenid(), model.getSession_key(), 3600 * 24 * 7);
+        String thirdSessionKey = null;
+        try
+        {
+            thirdSessionKey = ThirdSessionUtil.create();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        return GlrJSONResult.ok();
+        redis.set(thirdSessionKey, model.getOpenid() + " " + model.getSession_key(), 3600 * 24 * 7);
+        //TODO 将用户信息存入mysql
+
+        return GlrJSONResult.ok(thirdSessionKey);
+    }
+
+    @PostMapping("/checkSession")
+    public GlrJSONResult checkSession(@RequestBody Map<String, String> session)
+    {
+        String sessionKey = session.get("sessionkey");
+        if (redis.get(sessionKey) != null)
+        {
+            redis.expire(sessionKey, 3600 * 24 * 7);
+            return GlrJSONResult.build(200, "NotTimeOut", null);
+        } else
+        {
+            return GlrJSONResult.build(200, "TimeOut", null);
+        }
+
     }
 }
