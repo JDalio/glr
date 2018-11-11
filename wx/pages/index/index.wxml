@@ -1,0 +1,14 @@
+<!--pages/index.wxml-->
+<view wx:if="{{canIUse && !sessionOk}}">
+  <view class="header">
+    <image src="../images/wx_login.jpg"></image>
+  </view>
+
+  <view class='content'>
+    <view>申请获取以下权限</view>
+    <text>获得您的公开信息(头像、昵称等)</text>
+  </view>
+
+  <button class='button' type='primary' open-type="getUserInfo" bindgetuserinfo='doLogin'>授权登录</button>
+</view>
+<view wx:elif="{{!canIUse}}">请升级微信到最新版</view>
