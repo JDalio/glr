@@ -9,8 +9,11 @@ Page({
             canIUse: wx.canIUse("button.open-type.getUserInfo")
         },
     onLoad: function (params) {
+      console.log("---index---onLoad---")
     },
     doLogin: function (e) {//e.detail.userInfo用户公开信息
+      var userInfo = e.detail.userInfo
+      console.log("---index---doLogin---")
         var that = this
         wx.login({
             success: function (res) {
@@ -18,7 +21,7 @@ Page({
                 //调用后端，换取session_key，secret
                 wx.request({
                     url: 'http://localhost:8080/wxLogin',
-                    data: {'code': code},
+                    data: {'code': code,'nickName':userInfo.nickName,'gender':userInfo.gender,'city':userInfo.city,'province':userInfo.province,'avatarUrl':userInfo.avatarUrl},
                     method: "POST",
                     success: function (resp) {
                         //更新app.globalData 以及 local storage
